@@ -77,10 +77,10 @@ wandb.init(
 
     # track hyperparameters and run metadata
     config={
-    "learning_rate": 0.02,
     "architecture": "nnUNet",
     "dataset": "AMOS2022",
     "epochs": 1000,
+    "patchsize": self.configuration_manager.patch_size,
     }
 )
 
@@ -1033,6 +1033,7 @@ class nnUNetTrainer(object):
             loss_here = np.mean(outputs['loss'])
 
         self.logger.log('train_losses', loss_here, self.current_epoch)
+        wandb.log({"current_epoch": self.current_epoch, "loss": loss_here}, "learningrate": self.optimizer.param_groups[0]['lr'])
 
     def on_validation_epoch_start(self):
         self.network.eval()
