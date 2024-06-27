@@ -80,7 +80,7 @@ wandb.init(
     "architecture": "nnUNet",
     "dataset": "AMOS2022",
     "epochs": 1000,
-    "patchsize": self.configuration_manager.patch_size,
+    #"patchsize": self.configuration_manager.patch_size,
     }
 )
 
@@ -1396,3 +1396,4 @@ class nnUNetTrainer(object):
             self.on_epoch_end()
 
         self.on_train_end()
+        wandb.finish()
