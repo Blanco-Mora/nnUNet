@@ -1033,6 +1033,7 @@ class nnUNetTrainer(object):
             loss_here = np.mean(outputs['loss'])
 
         self.logger.log('train_losses', loss_here, self.current_epoch)
+        print("Is here")
         wandb.log({"current_epoch": self.current_epoch, "loss": loss_here, "learningrate": self.optimizer.param_groups[0]['lr']})
 
     def on_validation_epoch_start(self):
