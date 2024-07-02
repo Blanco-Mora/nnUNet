@@ -73,7 +73,7 @@ from nnunetv2.utilities.plans_handling.plans_handler import PlansManager
 # start a wandb run to track this script
 wandb.init(
     # set the wandb project where this run will be logged
-    project="nnUNet",
+    project="nnUNet_wandb",
 
     # track hyperparameters and run metadata
     config={
