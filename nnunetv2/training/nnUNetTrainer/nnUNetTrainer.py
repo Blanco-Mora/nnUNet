@@ -989,7 +989,7 @@ class nnUNetTrainer(object):
             f"Current learning rate: {np.round(self.optimizer.param_groups[0]['lr'], decimals=5)}")
         # lrs are the same for all workers so we don't need to gather them in case of DDP training
         self.logger.log('lrs', self.optimizer.param_groups[0]['lr'], self.current_epoch)
-
+        
     def train_step(self, batch: dict) -> dict:
         data = batch['data']
         target = batch['target']
@@ -1033,6 +1033,8 @@ class nnUNetTrainer(object):
             loss_here = np.mean(outputs['loss'])
 
         self.logger.log('train_losses', loss_here, self.current_epoch)
+        wandb.log({"current_epoch": self.current_epoch, "loss": loss_here, "learningrate": self.optimizer.param_groups[0]['lr']})
+
 
     def on_validation_epoch_start(self):
         self.network.eval()
@@ -1137,7 +1139,7 @@ class nnUNetTrainer(object):
         self.logger.log('dice_per_class_or_region', global_dc_per_class, self.current_epoch)
         self.logger.log('val_losses', loss_here, self.current_epoch)
         print('Is here')
-        wandb.log({"current_epoch": self.current_epoch, "loss": loss_here, "learningrate": self.optimizer.param_groups[0]['lr']})
+        wandb.log({"val_current_epoch": self.current_epoch, "val_loss": loss_here, "val_learningrate": self.optimizer.param_groups[0]['lr']})
 
     def on_epoch_start(self):
         self.logger.log('epoch_start_timestamps', time(), self.current_epoch)
