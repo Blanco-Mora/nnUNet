@@ -989,7 +989,7 @@ class nnUNetTrainer(object):
             f"Current learning rate: {np.round(self.optimizer.param_groups[0]['lr'], decimals=5)}")
         # lrs are the same for all workers so we don't need to gather them in case of DDP training
         self.logger.log('lrs', self.optimizer.param_groups[0]['lr'], self.current_epoch)
-        
+
     def train_step(self, batch: dict) -> dict:
         data = batch['data']
         target = batch['target']
@@ -1033,8 +1033,6 @@ class nnUNetTrainer(object):
             loss_here = np.mean(outputs['loss'])
 
         self.logger.log('train_losses', loss_here, self.current_epoch)
-        wandb.log({"current_epoch": self.current_epoch, "loss": loss_here, "learningrate": self.optimizer.param_groups[0]['lr']})
-
 
     def on_validation_epoch_start(self):
         self.network.eval()
@@ -1138,8 +1136,7 @@ class nnUNetTrainer(object):
         self.logger.log('mean_fg_dice', mean_fg_dice, self.current_epoch)
         self.logger.log('dice_per_class_or_region', global_dc_per_class, self.current_epoch)
         self.logger.log('val_losses', loss_here, self.current_epoch)
-        print('Is here')
-        wandb.log({"val_current_epoch": self.current_epoch, "val_loss": loss_here, "val_learningrate": self.optimizer.param_groups[0]['lr']})
+        wandb.log({"val_current_epoch": self.current_epoch, "VAL_loss": loss_here, "learningrate": self.optimizer.param_groups[0]['lr']})
 
     def on_epoch_start(self):
         self.logger.log('epoch_start_timestamps', time(), self.current_epoch)
@@ -1164,8 +1161,8 @@ class nnUNetTrainer(object):
             self._best_ema = self.logger.my_fantastic_logging['ema_fg_dice'][-1]
             self.print_to_log_file(f"Yayy! New best EMA pseudo Dice: {np.round(self._best_ema, decimals=4)}")
             self.save_checkpoint(join(self.output_folder, 'checkpoint_best.pth'))
-
-        wandb.log({"current_epoch": self.current_epoch, "val_loss": np.round(self.logger.my_fantastic_logging['val_losses'][-1], decimals=4), "train_losses": np.round(self.logger.my_fantastic_logging['train_losses'][-1], decimals=4)})
+        self.print_to_log_file(f"Saving weigths and biases variables")
+        wandb.log({"current_epoch": self.current_epoch, "train_loss": np.round(self.logger.my_fantastic_logging['train_losses'][-1], decimals=4), "val_loss": np.round(self.logger.my_fantastic_logging['val_losses'][-1], decimals=4)})
 
         if self.local_rank == 0:
             self.logger.plot_progress_png(self.output_folder)
