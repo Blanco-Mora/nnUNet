@@ -1165,6 +1165,8 @@ class nnUNetTrainer(object):
             self.print_to_log_file(f"Yayy! New best EMA pseudo Dice: {np.round(self._best_ema, decimals=4)}")
             self.save_checkpoint(join(self.output_folder, 'checkpoint_best.pth'))
 
+        wandb.log({"current_epoch": self.current_epoch, "val_loss": np.round(self.logger.my_fantastic_logging['val_losses'][-1], decimals=4), "train_losses": np.round(self.logger.my_fantastic_logging['train_losses'][-1], decimals=4)})
+
         if self.local_rank == 0:
             self.logger.plot_progress_png(self.output_folder)
 
